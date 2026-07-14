@@ -6,7 +6,10 @@ def show_sidebar():
 
         st.title("📝 AI Meeting Assistant")
 
-        st.markdown("---")
+        st.markdown("""
+Generate **professional meeting notes**, **chat with your transcript**, and **export notes** in multiple formats — all powered by **Groq LLM**.
+""")
+        st.divider()
 
         st.markdown("""
 ### Features

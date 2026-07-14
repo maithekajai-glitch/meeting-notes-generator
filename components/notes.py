@@ -10,7 +10,10 @@ def notes_section(transcript):
 
     st.subheader("📑 Generated Meeting Notes")
 
-    if st.button("📝 Generate Meeting Notes"):
+    if st.button(
+    "📝 Generate Meeting Notes",
+    key="generate_notes_btn"
+):
 
         if transcript.strip() == "":
 

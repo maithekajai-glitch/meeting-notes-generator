@@ -19,8 +19,10 @@ def chat_section(transcript):
             st.markdown(message["content"])
 
     # Chat input
-    prompt = st.chat_input("Ask anything about the meeting...")
-
+    prompt = st.chat_input(
+    "Ask anything about the meeting...",
+    key="meeting_chat_input"
+)
     if prompt:
 
         if transcript.strip() == "":
