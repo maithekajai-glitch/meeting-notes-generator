@@ -1,6 +1,7 @@
 import streamlit as st
 from components.transcript import transcript_section
 from components.sidebar import show_sidebar
+from components.chat import chat_section
 from components.notes import notes_section
 from utils.ai import generate_notes, ask_question
 from utils.file_parser import extract_text
@@ -96,86 +97,8 @@ with right:
 
     notes_section(transcript)
 
-    # ---------------------------------------
-    # Export Notes
-    # ---------------------------------------
-
-    st.divider()
-
-    st.subheader("📥 Export Meeting Notes")
-
-    if st.session_state.notes:
-
-        col1, col2, col3 = st.columns(3)
-
-        with col1:
-            if st.button("Export as Markdown"):
-                export_markdown(st.session_state.notes)
-
-        with col2:
-            if st.button("Export as DOCX"):
-                export_docx(st.session_state.notes)
-
-        with col3:
-            if st.button("Export as PDF"):
-                export_pdf(st.session_state.notes)
-
-    else:
-
-        st.info("Meeting notes will appear here after generation.")
 # ---------------------------------------
 # Chat with Transcript
 # ---------------------------------------
 
-st.divider()
-
-st.subheader("💬 Chat with your Meeting")
-
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-
-# Display chat history
-for message in st.session_state.messages:
-
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"])
-
-# Chat input
-question = st.chat_input("Ask anything about the meeting...")
-
-if question:
-
-    if transcript.strip() == "":
-        st.warning("Please upload or paste a transcript first.")
-
-    else:
-
-        # Show user message
-        st.session_state.messages.append(
-            {
-                "role": "user",
-                "content": question
-            }
-        )
-
-        with st.chat_message("user"):
-            st.markdown(question)
-
-        # Generate answer
-        with st.chat_message("assistant"):
-
-            with st.spinner("Thinking..."):
-
-                answer = ask_question(
-                    transcript,
-                    question
-                )
-
-                st.markdown(answer)
-
-        st.session_state.messages.append(
-            {
-                "role": "assistant",
-                "content": answer
-            }
-        )
+chat_section(transcript)
