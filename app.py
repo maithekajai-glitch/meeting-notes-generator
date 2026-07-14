@@ -133,27 +133,17 @@ with left:
 
     transcript = transcript_section()
 
-    col1, col2, col3 = st.columns(3)
+    col1, col2 = st.columns(2)
 
 with col1:
     st.metric(
-        "Transcript Length",
-        f"{len(transcript):,} chars"
+        "📝 Words",
+        len(transcript.split())
     )
 
 with col2:
-
-    words = len(transcript.split())
-
     st.metric(
-        "Words",
-        words
-    )
-
-with col3:
-
-    st.metric(
-        "Chat Messages",
+        "💬 Chat Messages",
         len(st.session_state.get("messages", []))
     )
 
@@ -182,3 +172,8 @@ st.divider()
 st.caption(
     "Built using Streamlit • Groq • OpenAI SDK • Python"
 )
+
+if transcript:
+    st.success("✅ Transcript loaded successfully")
+else:
+    st.info("📄 Paste or upload a meeting transcript to begin.")
