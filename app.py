@@ -28,31 +28,37 @@ st.set_page_config(
 st.markdown("""
 <style>
 
-.block-container{
-    padding-top:2rem;
-    padding-bottom:2rem;
+/* Metric Card */
+[data-testid="stMetric"]{
+    border:1px solid #dcdcdc;
+    border-radius:12px;
+    padding:10px;
+    text-align:center;
 }
 
-.stButton>button{
-    width:100%;
-    border-radius:12px;
-    height:48px;
+/* Metric Label */
+[data-testid="stMetricLabel"]{
+    font-size:16px;
     font-weight:600;
 }
 
+/* Metric Value */
+[data-testid="stMetricValue"]{
+    font-size:28px !important;
+    font-weight:600;
+}
+
+/* Button */
+.stButton>button{
+    width:100%;
+    border-radius:10px;
+    height:48px;
+}
+
+/* Download Button */
 .stDownloadButton>button{
     width:100%;
     border-radius:10px;
-}
-
-textarea{
-    font-size:15px;
-}
-
-.stMetric{
-    border:1px solid #ddd;
-    border-radius:12px;
-    padding:12px;
 }
 
 </style>
