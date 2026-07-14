@@ -1,4 +1,5 @@
 import streamlit as st
+from components.downloads import download_section
 from utils.ai import generate_notes
 
 
@@ -24,6 +25,8 @@ def notes_section(transcript):
     if st.session_state.notes:
 
         st.markdown(st.session_state.notes)
+
+        download_section(st.session_state.notes)
 
     else:
 
