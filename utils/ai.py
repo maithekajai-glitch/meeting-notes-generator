@@ -55,12 +55,14 @@ Meeting Transcript:
 
 
 def ask_question(transcript, question):
+
     prompt = f"""
-You are an AI Meeting Assistant.
+You are an intelligent Meeting Assistant.
 
-Answer ONLY using the information available in the meeting transcript.
+Use ONLY the meeting transcript below.
 
-If the answer is not present, respond:
+If the answer isn't present in the transcript,
+reply:
 
 "I couldn't find that information in the transcript."
 
@@ -68,7 +70,7 @@ Meeting Transcript:
 
 {transcript}
 
-Question:
+User Question:
 
 {question}
 """
@@ -78,7 +80,7 @@ Question:
         messages=[
             {
                 "role": "system",
-                "content": "You answer questions about meeting transcripts."
+                "content": "You answer questions only from meeting transcripts."
             },
             {
                 "role": "user",
