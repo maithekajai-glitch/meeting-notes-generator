@@ -1,4 +1,5 @@
 import streamlit as st
+from utils.ai import generate_notes
 
 st.set_page_config(
     page_title="Meeting Notes Generator",
@@ -8,28 +9,22 @@ st.set_page_config(
 
 st.title("📝 AI Meeting Notes Generator")
 
-st.write(
-    "Upload a meeting transcript or paste one below, and let AI generate professional meeting notes."
+st.write("Paste your meeting transcript below and let AI generate structured meeting notes.")
+
+transcript = st.text_area(
+    "Meeting Transcript",
+    height=300,
+    placeholder="Paste your meeting transcript here..."
 )
-
-# Input method
-option = st.radio(
-    "Choose an input method:",
-    ["Paste Transcript", "Upload File"]
-)
-
-if option == "Paste Transcript":
-    transcript = st.text_area(
-        "Paste your meeting transcript",
-        height=300,
-        placeholder="Paste your meeting transcript here..."
-    )
-
-else:
-    uploaded_file = st.file_uploader(
-        "Upload a transcript",
-        type=["txt", "pdf", "docx"]
-    )
 
 if st.button("Generate Notes"):
-    st.success("✅ Ready to generate meeting notes (AI will be added in the next milestone).")
+
+    if not transcript.strip():
+        st.warning("Please paste a meeting transcript.")
+    else:
+        with st.spinner("Generating meeting notes..."):
+            notes = generate_notes(transcript)
+
+        st.success("Meeting notes generated successfully!")
+
+        st.markdown(notes)
