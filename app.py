@@ -1,6 +1,7 @@
 import streamlit as st
 from components.transcript import transcript_section
 from components.sidebar import show_sidebar
+from components.notes import notes_section
 from utils.ai import generate_notes, ask_question
 from utils.file_parser import extract_text
 from utils.exporter import (
@@ -87,64 +88,41 @@ with left:
 
     transcript = transcript_section()
 
-    if st.button("📝 Generate Meeting Notes"):
-
-        if transcript.strip() == "":
-
-            st.warning("Please provide a meeting transcript.")
-
-        else:
-
-            with st.spinner("Generating meeting notes..."):
-
-                st.session_state.notes = generate_notes(transcript)
-
 # -------------------------------------------------
 # Right Column
 # -------------------------------------------------
 
 with right:
 
-    st.subheader("📑 Generated Meeting Notes")
+    notes_section(transcript)
+
+    # ---------------------------------------
+    # Export Notes
+    # ---------------------------------------
+
+    st.divider()
+
+    st.subheader("📥 Export Meeting Notes")
 
     if st.session_state.notes:
-
-        st.markdown(st.session_state.notes)
-
-        st.divider()
-
-        st.subheader("📥 Download Meeting Notes")
 
         col1, col2, col3 = st.columns(3)
 
         with col1:
-            st.download_button(
-                "⬇ Markdown",
-                data=export_markdown(st.session_state.notes),
-                file_name="meeting_notes.md",
-                mime="text/markdown"
-            )
+            if st.button("Export as Markdown"):
+                export_markdown(st.session_state.notes)
 
         with col2:
-            st.download_button(
-                "⬇ DOCX",
-                data=export_docx(st.session_state.notes),
-                file_name="meeting_notes.docx",
-                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-            )
+            if st.button("Export as DOCX"):
+                export_docx(st.session_state.notes)
 
         with col3:
-            st.download_button(
-                "⬇ PDF",
-                data=export_pdf(st.session_state.notes),
-                file_name="meeting_notes.pdf",
-                mime="application/pdf"
-            )
+            if st.button("Export as PDF"):
+                export_pdf(st.session_state.notes)
 
     else:
 
-        st.info("Meeting notes will appear here.")
-
+        st.info("Meeting notes will appear here after generation.")
 # ---------------------------------------
 # Chat with Transcript
 # ---------------------------------------
