@@ -1,232 +1,322 @@
 import streamlit as st
-from components.transcript import transcript_section
-from components.sidebar import show_sidebar
+
 from components.chat import chat_section
 from components.notes import notes_section
-from utils.ai import generate_notes, ask_question
-from utils.file_parser import extract_text
-from utils.exporter import (
-    export_markdown,
-    export_docx,
-    export_pdf,
-)
+from components.sidebar import show_sidebar
+from components.transcript import transcript_section
+
 
 # -------------------------------------------------
-# Page Config
+# Page configuration
 # -------------------------------------------------
 
 st.set_page_config(
     page_title="AI Meeting Assistant",
     page_icon="📝",
-    layout="wide"
+    layout="wide",
 )
 
+
 # -------------------------------------------------
-# Custom CSS
+# Custom styling
 # -------------------------------------------------
 
 st.markdown(
     """
     <style>
+    /* Main page */
     .block-container {
         max-width: 1250px;
         padding-top: 1.5rem;
         padding-bottom: 3rem;
     }
 
-    .hero-card {
-        padding: 1.5rem 1.7rem;
-        border: 1px solid rgba(108, 99, 255, 0.18);
-        border-radius: 18px;
-        background: linear-gradient(
-            135deg,
-            rgba(108, 99, 255, 0.12),
-            rgba(255, 255, 255, 0.92)
-        );
-        margin-bottom: 1.4rem;
+    h1, h2, h3 {
+        letter-spacing: -0.02em;
+    }
+
+    /* Hero section */
+    .hero-section {
+        padding: 1.8rem 2rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid rgba(109, 93, 251, 0.18);
+        border-radius: 22px;
+        background:
+            radial-gradient(
+                circle at top right,
+                rgba(109, 93, 251, 0.18),
+                transparent 38%
+            ),
+            linear-gradient(
+                135deg,
+                #ffffff 0%,
+                #f3f2ff 100%
+            );
+        box-shadow: 0 10px 35px rgba(30, 41, 59, 0.07);
+    }
+
+    .hero-badge {
+        display: inline-block;
+        padding: 0.35rem 0.75rem;
+        margin-bottom: 0.85rem;
+        border-radius: 999px;
+        background: rgba(109, 93, 251, 0.11);
+        color: #5546d7;
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.04em;
     }
 
     .hero-title {
-        font-size: 2rem;
-        font-weight: 750;
-        margin-bottom: 0.35rem;
+        margin: 0;
+        font-size: 2.25rem;
+        font-weight: 800;
+        color: #172033;
     }
 
-    .hero-subtitle {
-        font-size: 1rem;
-        color: #667085;
+    .hero-description {
+        max-width: 780px;
+        margin-top: 0.65rem;
         margin-bottom: 0;
+        color: #667085;
+        font-size: 1rem;
+        line-height: 1.65;
     }
 
+    /* Metric cards */
     [data-testid="stMetric"] {
-        background: white;
-        border: 1px solid #E5E7EB;
-        border-radius: 14px;
-        padding: 0.8rem 1rem;
-        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+        min-height: 100px;
+        padding: 1rem 1.1rem;
+        border: 1px solid #E6E8F0;
+        border-radius: 16px;
+        background: #FFFFFF;
+        box-shadow: 0 5px 18px rgba(30, 41, 59, 0.045);
     }
 
     [data-testid="stMetricLabel"] {
-        font-size: 0.85rem;
-        font-weight: 600;
+        color: #667085;
+        font-size: 0.82rem;
+        font-weight: 650;
     }
 
     [data-testid="stMetricValue"] {
-        font-size: 1.35rem;
-        font-weight: 700;
+        color: #172033;
+        font-size: 1.4rem;
+        font-weight: 750;
     }
 
+    /* Buttons */
     .stButton > button {
         width: 100%;
         min-height: 46px;
-        border-radius: 11px;
-        font-weight: 650;
+        border-radius: 12px;
+        font-weight: 700;
+        transition:
+            transform 0.15s ease,
+            box-shadow 0.15s ease;
+    }
+
+    .stButton > button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 7px 18px rgba(109, 93, 251, 0.18);
     }
 
     .stDownloadButton > button {
         width: 100%;
-        border-radius: 10px;
+        min-height: 43px;
+        border-radius: 11px;
+        font-weight: 650;
     }
 
-    textarea {
-        font-size: 0.95rem !important;
-        line-height: 1.55 !important;
-    }
-
-    [data-testid="stFileUploader"] {
-        border: 1px dashed #C7C9FF;
-        border-radius: 14px;
-        padding: 0.5rem;
-        background: rgba(108, 99, 255, 0.03);
-    }
-
+    /* Tabs */
     [data-baseweb="tab-list"] {
-        gap: 0.5rem;
+        gap: 0.4rem;
+        padding: 0.35rem;
+        border-radius: 14px;
+        background: #EEF0F7;
     }
 
     [data-baseweb="tab"] {
-        border-radius: 10px 10px 0 0;
-        padding-left: 1rem;
-        padding-right: 1rem;
-        font-weight: 600;
+        min-height: 44px;
+        padding-left: 1.1rem;
+        padding-right: 1.1rem;
+        border-radius: 10px;
+        font-weight: 700;
     }
 
-    hr {
-        margin-top: 1.4rem;
-        margin-bottom: 1.4rem;
+    [aria-selected="true"][data-baseweb="tab"] {
+        background: #FFFFFF;
+        box-shadow: 0 3px 10px rgba(30, 41, 59, 0.08);
     }
 
-    .footer {
+    /* File uploader */
+    [data-testid="stFileUploader"] {
+        padding: 0.4rem;
+        border: 1px dashed #B8B4F8;
+        border-radius: 15px;
+        background: rgba(109, 93, 251, 0.035);
+    }
+
+    /* Text areas */
+    textarea {
+        border-radius: 13px !important;
+        font-size: 0.95rem !important;
+        line-height: 1.6 !important;
+    }
+
+    /* Chat messages */
+    [data-testid="stChatMessage"] {
+        padding: 0.85rem 1rem;
+        margin-bottom: 0.7rem;
+        border: 1px solid #E8EAF1;
+        border-radius: 15px;
+        background: #FFFFFF;
+    }
+
+    /* Alerts */
+    [data-testid="stAlert"] {
+        border-radius: 13px;
+    }
+
+    /* Expanders */
+    [data-testid="stExpander"] {
+        border: 1px solid #E6E8F0;
+        border-radius: 14px;
+        background: #FFFFFF;
+    }
+
+    /* Sidebar */
+    [data-testid="stSidebar"] {
+        border-right: 1px solid #E2E4F0;
+    }
+
+    [data-testid="stSidebar"] .block-container {
+        padding-top: 1.5rem;
+    }
+
+    /* Footer */
+    .app-footer {
+        margin-top: 2rem;
+        padding: 1.3rem 0 0.4rem;
+        border-top: 1px solid #E5E7EB;
+        color: #98A2B3;
         text-align: center;
-        color: #8A94A6;
-        font-size: 0.85rem;
-        padding-top: 1rem;
+        font-size: 0.83rem;
+    }
+
+    footer {
+        visibility: hidden;
     }
     </style>
     """,
     unsafe_allow_html=True,
 )
 
+
 # -------------------------------------------------
-# Session State
+# Session state
 # -------------------------------------------------
 
 if "notes" not in st.session_state:
     st.session_state.notes = ""
+
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
 
 # -------------------------------------------------
 # Sidebar
 # -------------------------------------------------
 
 show_sidebar()
-st.sidebar.title("📝 AI Meeting Assistant")
 
-st.sidebar.markdown("---")
 
-st.sidebar.success("✅ Groq Connected")
-
-st.sidebar.markdown("### Features")
-
-st.sidebar.markdown("""
-- 📝 Generate Notes
-- 💬 Chat
-- 📄 Upload Files
-- 📥 Export
-- ⚡ Fast Responses
-""")
-
-st.sidebar.markdown("---")
-
-st.sidebar.info(
-"""
-Supported Files
-
-• TXT
-
-• PDF
-
-• DOCX
-"""
-)
 # -------------------------------------------------
-# Title
+# Hero section
 # -------------------------------------------------
 
 st.markdown(
     """
-    <div class="hero-card">
-        <div class="hero-title">📝 AI Meeting Assistant</div>
-        <p class="hero-subtitle">
-            Turn transcripts into structured notes, ask follow-up questions,
-            and export your meeting summary in seconds.
+    <div class="hero-section">
+        <div class="hero-badge">
+            AI-POWERED MEETING INTELLIGENCE
+        </div>
+
+        <h1 class="hero-title">
+            📝 AI Meeting Assistant
+        </h1>
+
+        <p class="hero-description">
+            Turn documents, audio recordings, browser recordings, and meeting
+            videos into structured notes. Ask follow-up questions, identify
+            decisions and action items, and export professional summaries.
         </p>
     </div>
     """,
     unsafe_allow_html=True,
 )
 
-# -------------------------------------------------
-# Layout
-# -------------------------------------------------
-
-left, right = st.columns(
-    [1.1, 0.9]
-)
-
-transcript = ""
 
 # -------------------------------------------------
-# Left Column
+# Transcript input
 # -------------------------------------------------
 
-with left:
+transcript = transcript_section()
 
-    transcript = transcript_section()
 
-metric_col1, metric_col2 = st.columns(2)
+# -------------------------------------------------
+# Dashboard metrics
+# -------------------------------------------------
+
+word_count = len(transcript.split())
+message_count = len(st.session_state.get("messages", []))
+notes_ready = bool(st.session_state.get("notes", ""))
+
+metric_col1, metric_col2, metric_col3 = st.columns(3)
 
 with metric_col1:
     st.metric(
-        label="📝 Words",
-        value=f"{len(transcript.split()):,}"
+        label="📝 Transcript words",
+        value=f"{word_count:,}",
     )
 
 with metric_col2:
     st.metric(
-        label="💬 Chat Messages",
-        value=len(st.session_state.get("messages", []))
+        label="💬 Chat messages",
+        value=message_count,
+    )
+
+with metric_col3:
+    st.metric(
+        label="📑 Notes status",
+        value="Ready" if notes_ready else "Not generated",
+    )
+
+
+# -------------------------------------------------
+# Input status
+# -------------------------------------------------
+
+if transcript.strip():
+    st.success("Transcript loaded successfully.", icon="✅")
+else:
+    st.info(
+        "Paste, upload, or record a meeting to begin.",
+        icon="📄",
     )
 
 st.divider()
 
+
 # -------------------------------------------------
-# Right Column
+# Main tabs
 # -------------------------------------------------
-notes_tab, chat_tab, help_tab = st.tabs(
+
+notes_tab, chat_tab, guide_tab = st.tabs(
     [
         "📝 Meeting Notes",
-        "💬 Chat",
-        "ℹ️ How to Use",
+        "💬 Ask the Meeting",
+        "✨ Quick Guide",
     ]
 )
 
@@ -236,45 +326,62 @@ with notes_tab:
 with chat_tab:
     chat_section(transcript)
 
-with help_tab:
-    st.markdown(
-        """
-        ### How to use the assistant
+with guide_tab:
+    guide_col1, guide_col2 = st.columns(2)
 
-        1. Paste a transcript or upload a TXT, PDF, or DOCX file.
-        2. Open **Meeting Notes** and generate structured notes.
-        3. Open **Chat** to ask questions about the transcript.
-        4. Download the notes as Markdown, DOCX, or PDF.
+    with guide_col1:
+        with st.container(border=True):
+            st.markdown("### 1. Add your meeting")
 
-        ### Example questions
+            st.markdown(
+                """
+                Choose one input source:
 
-        - What decisions were made?
-        - Who owns each action item?
-        - What deadlines were mentioned?
-        - What blockers or risks were discussed?
-        """
-    )
+                - Paste a transcript
+                - Upload TXT, PDF, or DOCX
+                - Upload meeting audio
+                - Upload a meeting video
+                - Record audio directly in the browser
+                """
+            )
 
-# ---------------------------------------
-# Chat with Transcript
-# ---------------------------------------
+    with guide_col2:
+        with st.container(border=True):
+            st.markdown("### 2. Use the AI tools")
+
+            st.markdown(
+                """
+                - Generate structured meeting notes
+                - Review decisions and action items
+                - Ask transcript-based questions
+                - Continue with follow-up questions
+                - Download PDF, DOCX, or Markdown
+                """
+            )
+
+    with st.container(border=True):
+        st.markdown("### Example questions")
+
+        st.markdown(
+            """
+            - What decisions were confirmed?
+            - Who owns each action item?
+            - What deadlines were mentioned?
+            - What risks or blockers remain?
+            - Summarize the meeting in five bullet points.
+            - What happens after the review?
+            """
+        )
 
 
-st.divider()
-
-st.caption(
-    "Built using Streamlit • Groq • OpenAI SDK • Python"
-)
-
-if transcript:
-    st.success("✅ Transcript loaded successfully")
-else:
-    st.info("📄 Paste or upload a meeting transcript to begin.")
+# -------------------------------------------------
+# Footer
+# -------------------------------------------------
 
 st.markdown(
     """
-    <div class="footer">
-        Built with Streamlit, Groq and Python
+    <div class="app-footer">
+        Built with Streamlit, Groq, Whisper and Python
     </div>
     """,
     unsafe_allow_html=True,
