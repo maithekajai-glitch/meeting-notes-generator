@@ -3,10 +3,10 @@ import streamlit as st
 
 def show_sidebar() -> None:
     with st.sidebar:
-        st.markdown("## 📝 Meeting Assistant")
+        st.markdown("## 🤖 Meeting Assistant")
 
         st.caption(
-            "Summaries, transcript chat, and meeting intelligence."
+            "AI-powered meeting intelligence workspace"
         )
 
         st.divider()
@@ -16,47 +16,56 @@ def show_sidebar() -> None:
             icon="✅",
         )
 
-        st.markdown("### Input options")
+        st.markdown("### Navigation")
 
         st.markdown(
             """
-            📄 Documents  
-            TXT, PDF and DOCX
+🏠 **Dashboard**
 
-            🎙️ Audio  
-            MP3, WAV, M4A and more
+📄 **Meeting source**
 
-            🎥 Video  
-            MP4, MPEG and WebM
+📝 **Generated notes**
 
-            🎤 Live recording  
-            Record directly in the browser
-            """
+💬 **Transcript chat**
+
+📥 **Downloads**
+"""
         )
 
         st.divider()
 
-        st.markdown("### Workspace")
+        st.markdown("### Supported sources")
+
+        st.markdown(
+            """
+- TXT, PDF and DOCX
+- MP3, WAV and M4A
+- MP4, MPEG and WebM
+- Browser microphone recording
+"""
+        )
+
+        st.divider()
 
         notes_exist = bool(st.session_state.get("notes", ""))
         messages = st.session_state.get("messages", [])
 
+        st.markdown("### Session")
+
         st.caption(
-            f"Notes: {'Generated' if notes_exist else 'Not generated'}"
+            f"Notes: {'Ready' if notes_exist else 'Not generated'}"
         )
 
         st.caption(
-            f"Conversation messages: {len(messages)}"
+            f"Messages: {len(messages)}"
         )
-
-        st.divider()
 
         if st.button(
-            "🗑️ Clear current session",
-            key="clear_current_session",
-            width="stretch",
+            "🗑️ Clear session",
+            key="clear_session_button",
+            use_container_width=True,
         ):
-            for key in [
+            keys_to_clear = [
                 "notes",
                 "messages",
                 "last_transcript",
@@ -64,11 +73,9 @@ def show_sidebar() -> None:
                 "video_transcript",
                 "recorded_transcript",
                 "pasted_transcript",
-            ]:
+            ]
+
+            for key in keys_to_clear:
                 st.session_state.pop(key, None)
 
             st.rerun()
-
-        st.caption(
-            "Your API key is stored securely in Streamlit Secrets."
-        )

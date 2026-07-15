@@ -1,17 +1,16 @@
 [theme]
-base = "light"
-primaryColor = "#6D5DFB"
-backgroundColor = "#F7F8FC"
-secondaryBackgroundColor = "#FFFFFF"
-textColor = "#172033"
+base = "dark"
+primaryColor = "#7C3AED"
+backgroundColor = "#0D1117"
+secondaryBackgroundColor = "#161B22"
+textColor = "#F0F6FC"
 font = "sans serif"
-baseRadius = "large"
-buttonRadius = "large"
-showWidgetBorder = true
-showSidebarBorder = true
 
 [theme.sidebar]
-backgroundColor = "#EEF0FF"
-secondaryBackgroundColor = "#FFFFFF"
-textColor = "#172033"
-primaryColor = "#6D5DFB"
+backgroundColor = "#010409"
+secondaryBackgroundColor = "#161B22"
+textColor = "#F0F6FC"
+primaryColor = "#A78BFA"
+
+[server]
+maxUploadSize = 200
