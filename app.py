@@ -422,7 +422,7 @@ transcript = transcript_section()
 
 word_count = len(transcript.split())
 message_count = len(st.session_state.get("messages", []))
-notes_ready = bool(st.session_state.get("notes", ""))
+
 
 metric_col1, metric_col2, metric_col3 = st.columns(3)
 
@@ -438,11 +438,6 @@ with metric_col2:
         value=message_count,
     )
 
-with metric_col3:
-    st.metric(
-        label="📑 Notes status",
-        value="Ready" if notes_ready else "Not generated",
-    )
 
 
 # -------------------------------------------------
