@@ -19,35 +19,45 @@ st.set_page_config(
 
 
 # -------------------------------------------------
-# GitHub Dark + Purple UI
+# Session state
+# -------------------------------------------------
+
+if "notes" not in st.session_state:
+    st.session_state.notes = ""
+
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+
+# -------------------------------------------------
+# Light theme styling
 # -------------------------------------------------
 
 st.markdown(
     """
 <style>
 :root {
-    --app-bg: #0D1117;
-    --surface: #161B22;
-    --surface-soft: #1C2128;
-    --surface-hover: #21262D;
-    --border: #30363D;
-    --border-purple: rgba(124, 58, 237, 0.55);
-    --text-main: #F0F6FC;
-    --text-muted: #8B949E;
-    --purple: #7C3AED;
-    --purple-light: #A78BFA;
-    --green: #3FB950;
+    --app-bg: #F7F8FC;
+    --surface: #FFFFFF;
+    --surface-soft: #F1F3F8;
+    --border: #DDE1EA;
+    --text-main: #172033;
+    --text-muted: #667085;
+    --accent: #6D5DFB;
+    --accent-dark: #5848E5;
+    --accent-light: #EDEAFF;
 }
 
-/* Main page */
+/* Entire application */
 .stApp {
     background:
         radial-gradient(
-            circle at 80% 5%,
-            rgba(124, 58, 237, 0.12),
-            transparent 24rem
+            circle at 85% 2%,
+            rgba(109, 93, 251, 0.12),
+            transparent 27rem
         ),
-        #0D1117;
+        var(--app-bg);
+    color: var(--text-main);
 }
 
 .block-container {
@@ -56,102 +66,60 @@ st.markdown(
     padding-bottom: 3rem;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3,
+h4,
+p,
+label {
     color: var(--text-main);
+}
+
+h1,
+h2,
+h3 {
     letter-spacing: -0.025em;
 }
 
-/* Hero */
-.hero-section {
-    position: relative;
-    overflow: hidden;
-    padding: 2.2rem 2.3rem;
+/* Hero card */
+.hero-container {
+    padding: 2rem 2.2rem;
     margin-bottom: 1.5rem;
-    border: 1px solid var(--border-purple);
+    border: 1px solid rgba(109, 93, 251, 0.22);
     border-radius: 22px;
     background:
+        radial-gradient(
+            circle at top right,
+            rgba(109, 93, 251, 0.16),
+            transparent 35%
+        ),
         linear-gradient(
             135deg,
-            rgba(124, 58, 237, 0.19),
-            rgba(22, 27, 34, 0.92) 45%,
-            rgba(13, 17, 23, 0.98)
+            #FFFFFF,
+            #F1EFFF
         );
-    box-shadow:
-        0 18px 55px rgba(0, 0, 0, 0.34),
-        inset 0 1px 0 rgba(255, 255, 255, 0.04);
-}
-
-.hero-section::after {
-    content: "";
-    position: absolute;
-    width: 230px;
-    height: 230px;
-    top: -110px;
-    right: -70px;
-    border-radius: 50%;
-    background: rgba(124, 58, 237, 0.18);
-    filter: blur(14px);
-}
-
-.hero-badge {
-    position: relative;
-    z-index: 1;
-    display: inline-block;
-    padding: 0.38rem 0.78rem;
-    margin-bottom: 0.9rem;
-    border: 1px solid rgba(167, 139, 250, 0.35);
-    border-radius: 999px;
-    background: rgba(124, 58, 237, 0.18);
-    color: #C4B5FD;
-    font-size: 0.76rem;
-    font-weight: 800;
-    letter-spacing: 0.075em;
-}
-
-.hero-title {
-    position: relative;
-    z-index: 1;
-    margin: 0;
-    color: var(--text-main);
-    font-size: 2.45rem;
-    font-weight: 850;
-}
-
-.hero-description {
-    position: relative;
-    z-index: 1;
-    max-width: 790px;
-    margin-top: 0.72rem;
-    margin-bottom: 0;
-    color: #B1BAC4;
-    font-size: 1.02rem;
-    line-height: 1.7;
+    box-shadow: 0 14px 38px rgba(30, 41, 59, 0.08);
 }
 
 /* Metrics */
 [data-testid="stMetric"] {
-    min-height: 108px;
+    min-height: 105px;
     padding: 1rem 1.15rem;
     border: 1px solid var(--border);
     border-radius: 16px;
-    background:
-        linear-gradient(
-            145deg,
-            rgba(28, 33, 40, 0.98),
-            rgba(22, 27, 34, 0.98)
-        );
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+    background: var(--surface);
+    box-shadow: 0 7px 22px rgba(30, 41, 59, 0.06);
 }
 
 [data-testid="stMetric"]:hover {
-    border-color: rgba(124, 58, 237, 0.65);
+    border-color: rgba(109, 93, 251, 0.5);
     transform: translateY(-1px);
     transition: 0.15s ease;
 }
 
 [data-testid="stMetricLabel"] {
     color: var(--text-muted);
-    font-size: 0.82rem;
+    font-size: 0.84rem;
     font-weight: 700;
 }
 
@@ -161,198 +129,203 @@ h1, h2, h3 {
     font-weight: 800;
 }
 
-/* Buttons */
+/* Main buttons */
 .stButton > button {
     width: 100%;
     min-height: 46px;
-    border: 1px solid rgba(167, 139, 250, 0.38);
+    border: 1px solid var(--accent);
     border-radius: 12px;
-    background:
-        linear-gradient(
-            135deg,
-            #7C3AED,
-            #6D28D9
-        );
-    color: white;
-    font-weight: 750;
-    box-shadow: 0 8px 20px rgba(124, 58, 237, 0.2);
+    background: linear-gradient(
+        135deg,
+        var(--accent),
+        var(--accent-dark)
+    );
+    color: #FFFFFF;
+    font-weight: 700;
+    box-shadow: 0 7px 18px rgba(109, 93, 251, 0.2);
     transition:
         transform 0.15s ease,
         box-shadow 0.15s ease;
 }
 
 .stButton > button:hover {
-    border-color: #C4B5FD;
-    color: white;
+    border-color: var(--accent-dark);
+    background: linear-gradient(
+        135deg,
+        #796AFF,
+        var(--accent)
+    );
+    color: #FFFFFF;
     transform: translateY(-1px);
-    box-shadow: 0 11px 26px rgba(124, 58, 237, 0.33);
+    box-shadow: 0 10px 24px rgba(109, 93, 251, 0.28);
 }
 
 .stButton > button:disabled {
-    background: #21262D;
-    color: #6E7681;
-    border-color: #30363D;
+    border-color: #D8DCE5;
+    background: #E8EAF0;
+    color: #98A2B3;
     box-shadow: none;
 }
 
+/* Download buttons */
 .stDownloadButton > button {
     width: 100%;
     min-height: 43px;
-    border: 1px solid #484F58;
+    border: 1px solid var(--border);
     border-radius: 11px;
-    background: #21262D;
-    color: #F0F6FC;
+    background: var(--surface);
+    color: var(--text-main);
     font-weight: 700;
 }
 
 .stDownloadButton > button:hover {
-    border-color: var(--purple-light);
-    color: white;
-    background: #292E36;
+    border-color: var(--accent);
+    background: var(--accent-light);
+    color: var(--accent-dark);
 }
 
 /* Tabs */
 [data-baseweb="tab-list"] {
-    gap: 0.45rem;
+    gap: 0.4rem;
     padding: 0.4rem;
     border: 1px solid var(--border);
     border-radius: 14px;
-    background: #161B22;
+    background: #EEF0F6;
 }
 
 [data-baseweb="tab"] {
     min-height: 45px;
-    padding-left: 1.15rem;
-    padding-right: 1.15rem;
+    padding-left: 1.1rem;
+    padding-right: 1.1rem;
     border-radius: 10px;
-    color: #8B949E;
-    font-weight: 750;
+    color: var(--text-muted);
+    font-weight: 700;
 }
 
 [data-baseweb="tab"]:hover {
-    color: #F0F6FC;
-    background: #21262D;
+    color: var(--text-main);
+    background: #FFFFFF;
 }
 
 [aria-selected="true"][data-baseweb="tab"] {
     color: #FFFFFF;
-    background:
-        linear-gradient(
-            135deg,
-            rgba(124, 58, 237, 0.82),
-            rgba(109, 40, 217, 0.72)
-        );
-    box-shadow: 0 6px 18px rgba(124, 58, 237, 0.23);
+    background: var(--accent);
+    box-shadow: 0 5px 16px rgba(109, 93, 251, 0.22);
 }
 
-/* File uploader */
+/* File upload */
 [data-testid="stFileUploader"] {
     padding: 0.5rem;
-    border: 1px dashed rgba(167, 139, 250, 0.65);
+    border: 1px dashed rgba(109, 93, 251, 0.65);
     border-radius: 16px;
-    background:
-        linear-gradient(
-            145deg,
-            rgba(124, 58, 237, 0.08),
-            rgba(22, 27, 34, 0.88)
-        );
+    background: rgba(109, 93, 251, 0.035);
 }
 
 [data-testid="stFileUploaderDropzone"] {
-    min-height: 150px;
+    min-height: 145px;
     border-radius: 13px;
-    background: rgba(13, 17, 23, 0.55);
+    background: #FFFFFF;
 }
 
 [data-testid="stFileUploaderDropzoneInstructions"] {
-    color: #C9D1D9;
+    color: var(--text-muted);
 }
 
-/* Inputs */
+/* Text input */
 textarea,
 input {
-    color: #F0F6FC !important;
+    color: var(--text-main) !important;
 }
 
 textarea {
-    border: 1px solid #30363D !important;
+    border: 1px solid var(--border) !important;
     border-radius: 13px !important;
-    background: #0D1117 !important;
+    background: #FFFFFF !important;
     font-size: 0.95rem !important;
     line-height: 1.6 !important;
 }
 
 textarea:focus {
-    border-color: #7C3AED !important;
-    box-shadow: 0 0 0 1px #7C3AED !important;
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 0 1px var(--accent) !important;
 }
 
-/* Select boxes */
+/* Dropdown */
 [data-baseweb="select"] > div {
-    border-color: #30363D !important;
+    border-color: var(--border) !important;
     border-radius: 12px !important;
-    background: #161B22 !important;
+    background: #FFFFFF !important;
+    color: var(--text-main) !important;
+}
+
+[data-baseweb="popover"] {
+    color: var(--text-main);
+}
+
+[data-baseweb="menu"] {
+    background: #FFFFFF !important;
+}
+
+[role="option"] {
+    color: var(--text-main) !important;
+    background: #FFFFFF !important;
+}
+
+[role="option"]:hover {
+    background: var(--accent-light) !important;
 }
 
 /* Chat */
 [data-testid="stChatMessage"] {
     padding: 0.95rem 1rem;
     margin-bottom: 0.75rem;
-    border: 1px solid #30363D;
+    border: 1px solid var(--border);
     border-radius: 16px;
-    background: #161B22;
-    box-shadow: 0 5px 16px rgba(0, 0, 0, 0.16);
+    background: var(--surface);
+    box-shadow: 0 5px 16px rgba(30, 41, 59, 0.05);
 }
 
 [data-testid="stChatMessage"]:has(
     [data-testid="stChatMessageAvatarUser"]
 ) {
     margin-left: 7%;
-    border-color: rgba(124, 58, 237, 0.5);
-    background: rgba(124, 58, 237, 0.12);
+    border-color: rgba(109, 93, 251, 0.35);
+    background: #F3F1FF;
 }
 
 [data-testid="stChatMessage"]:has(
     [data-testid="stChatMessageAvatarAssistant"]
 ) {
     margin-right: 7%;
-    background: #161B22;
 }
 
 [data-testid="stChatInput"] {
-    border: 1px solid #30363D;
+    border: 1px solid var(--border);
     border-radius: 15px;
-    background: #161B22;
+    background: #FFFFFF;
 }
 
-/* Alerts */
+/* Alerts and expanders */
 [data-testid="stAlert"] {
     border-radius: 13px;
-    border: 1px solid #30363D;
 }
 
-/* Expanders and containers */
 [data-testid="stExpander"] {
-    border: 1px solid #30363D;
+    border: 1px solid var(--border);
     border-radius: 14px;
-    background: #161B22;
+    background: var(--surface);
 }
 
 [data-testid="stVerticalBlockBorderWrapper"] {
-    border-color: #30363D !important;
+    border-color: var(--border) !important;
     border-radius: 15px !important;
-    background: rgba(22, 27, 34, 0.72);
+    background: var(--surface);
 }
 
 /* Sidebar */
 [data-testid="stSidebar"] {
-    border-right: 1px solid #30363D;
-    background:
-        linear-gradient(
-            180deg,
-            #010409,
-            #0D1117
-        );
+    border-right: 1px solid var(--border);
+    background: #FFFFFF;
 }
 
 [data-testid="stSidebar"] .block-container {
@@ -360,20 +333,20 @@ textarea:focus {
 }
 
 [data-testid="stSidebar"] hr {
-    border-color: #30363D;
+    border-color: var(--border);
 }
 
 /* Dividers */
 hr {
-    border-color: #30363D;
+    border-color: var(--border);
 }
 
 /* Footer */
 .app-footer {
     margin-top: 2rem;
     padding: 1.4rem 0 0.45rem;
-    border-top: 1px solid #30363D;
-    color: #8B949E;
+    border-top: 1px solid var(--border);
+    color: var(--text-muted);
     text-align: center;
     font-size: 0.83rem;
 }
@@ -382,28 +355,19 @@ hr {
     display: inline-block;
     padding: 0.25rem 0.55rem;
     margin: 0.18rem;
-    border: 1px solid #30363D;
+    border: 1px solid var(--border);
     border-radius: 999px;
-    background: #161B22;
-    color: #B1BAC4;
+    background: #FFFFFF;
+    color: var(--text-muted);
     font-size: 0.76rem;
 }
 
-/* Hide default footer */
 footer {
     visibility: hidden;
 }
 
-/* Mobile */
+/* Responsive */
 @media (max-width: 700px) {
-    .hero-section {
-        padding: 1.45rem;
-    }
-
-    .hero-title {
-        font-size: 1.85rem;
-    }
-
     [data-testid="stChatMessage"]:has(
         [data-testid="stChatMessageAvatarUser"]
     ),
@@ -421,17 +385,6 @@ footer {
 
 
 # -------------------------------------------------
-# Session state
-# -------------------------------------------------
-
-if "notes" not in st.session_state:
-    st.session_state.notes = ""
-
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-
-
-# -------------------------------------------------
 # Sidebar
 # -------------------------------------------------
 
@@ -439,38 +392,32 @@ show_sidebar()
 
 
 # -------------------------------------------------
-# Hero
+# Hero section
 # -------------------------------------------------
 
-st.markdown(
-    """
-<div class="hero-section">
-    <div class="hero-badge">AI-POWERED MEETING INTELLIGENCE</div>
+with st.container(border=True):
+    st.caption("AI-POWERED MEETING INTELLIGENCE")
 
-    <div class="hero-title">
-        📝 AI Meeting Assistant
-    </div>
+    st.title("📝 AI Meeting Assistant")
 
-    <div class="hero-description">
-        Convert documents, audio recordings, browser recordings, and meeting
-        videos into structured insights. Generate professional notes, identify
-        action items, continue contextual conversations, and export results.
-    </div>
-</div>
-""",
-    unsafe_allow_html=True,
-)
+    st.markdown(
+        """
+Turn documents, audio recordings, browser recordings, and meeting videos
+into structured insights. Generate professional notes, identify action
+items, ask contextual follow-up questions, and export the results.
+"""
+    )
 
 
 # -------------------------------------------------
-# Transcript input
+# Meeting source
 # -------------------------------------------------
 
 transcript = transcript_section()
 
 
 # -------------------------------------------------
-# Dashboard metrics
+# Metrics
 # -------------------------------------------------
 
 word_count = len(transcript.split())
@@ -517,7 +464,7 @@ st.divider()
 
 
 # -------------------------------------------------
-# Main workspace
+# Workspace
 # -------------------------------------------------
 
 notes_tab, chat_tab, guide_tab = st.tabs(
@@ -543,8 +490,6 @@ with guide_tab:
 
             st.markdown(
                 """
-Choose one source:
-
 - Paste a transcript
 - Upload TXT, PDF, or DOCX
 - Upload meeting audio
@@ -559,7 +504,7 @@ Choose one source:
 
             st.markdown(
                 """
-- Generate structured meeting notes
+- Generate structured notes
 - Identify decisions and action items
 - Ask transcript-grounded questions
 - Continue with follow-up questions
@@ -577,7 +522,6 @@ Choose one source:
 - Which deadlines were mentioned?
 - What risks or blockers remain?
 - Summarize the meeting in five bullet points.
-- What happens after the next review?
 """
         )
 
