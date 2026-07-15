@@ -169,25 +169,42 @@ Meeting transcript:
 
     return response.choices[0].message.content or ""
 
-def transcribe_audio(audio_file) -> str:
-    """Convert uploaded or recorded audio into text using Groq."""
+def transcribe_media(media_file) -> str:
+    """Transcribe speech from an uploaded audio or video file."""
 
-    if audio_file is None:
-        raise ValueError("Audio file is required.")
+    if media_file is None:
+        raise ValueError("An audio or video file is required.")
 
-    audio_file.seek(0)
+    media_file.seek(0)
+
+    file_name = getattr(
+        media_file,
+        "name",
+        "meeting_recording.wav",
+    )
+
+    media_bytes = media_file.read()
+
+    if not media_bytes:
+        raise ValueError("The uploaded media file is empty.")
 
     transcription = client.audio.transcriptions.create(
         model="whisper-large-v3-turbo",
-        file=(
-            getattr(audio_file, "name", "meeting_audio.wav"),
-            audio_file.read(),
-        ),
+        file=(file_name, media_bytes),
         response_format="text",
         temperature=0.0,
     )
 
     if isinstance(transcription, str):
-        return transcription.strip()
+        transcript = transcription
+    else:
+        transcript = getattr(transcription, "text", "")
 
-    return str(getattr(transcription, "text", "")).strip()
+    transcript = str(transcript).strip()
+
+    if not transcript:
+        raise RuntimeError(
+            "No speech could be extracted from the uploaded media."
+        )
+
+    return transcript
