@@ -1,28 +1,44 @@
 import streamlit as st
 
+
 def show_sidebar():
-
     with st.sidebar:
+        st.title("📝 Meeting Assistant")
+        st.caption("AI-powered meeting intelligence")
 
-        st.title("📝 AI Meeting Assistant")
-
-        st.markdown("""
-Generate **professional meeting notes**, **chat with your transcript**, and **export notes** in multiple formats — all powered by **Groq LLM**.
-""")
         st.divider()
 
-        st.markdown("""
-### Features
+        st.success("Groq connected", icon="✅")
 
-- 📝 Generate Meeting Notes
-- 💬 Chat with Transcript
-- 📄 Upload TXT/PDF/DOCX
-- 📥 Export Notes
-- ⚡ Powered by Groq
-""")
+        st.markdown("### Workspace")
 
-        st.markdown("---")
+        st.markdown(
+            """
+            **Generate notes**  
+            Create structured summaries and action items.
 
-        st.info(
-            "Upload or paste a meeting transcript to generate AI-powered meeting notes."
+            **Chat with transcript**  
+            Ask grounded questions about the meeting.
+
+            **Export results**  
+            Download PDF, DOCX, or Markdown.
+            """
         )
+
+        st.divider()
+
+        st.markdown("### Supported files")
+
+        st.caption("TXT · PDF · DOCX")
+
+        st.divider()
+
+        if st.button(
+            "Clear session",
+            key="clear_session_button",
+            use_container_width=True,
+        ):
+            st.session_state.notes = ""
+            st.session_state.messages = []
+            st.session_state.last_transcript = ""
+            st.rerun()

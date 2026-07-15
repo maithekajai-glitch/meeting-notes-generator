@@ -25,44 +25,107 @@ st.set_page_config(
 # Custom CSS
 # -------------------------------------------------
 
-st.markdown("""
-<style>
+st.markdown(
+    """
+    <style>
+    .block-container {
+        max-width: 1250px;
+        padding-top: 1.5rem;
+        padding-bottom: 3rem;
+    }
 
-/* Metric Card */
-[data-testid="stMetric"]{
-    border:1px solid #dcdcdc;
-    border-radius:12px;
-    padding:10px;
-    text-align:center;
-}
+    .hero-card {
+        padding: 1.5rem 1.7rem;
+        border: 1px solid rgba(108, 99, 255, 0.18);
+        border-radius: 18px;
+        background: linear-gradient(
+            135deg,
+            rgba(108, 99, 255, 0.12),
+            rgba(255, 255, 255, 0.92)
+        );
+        margin-bottom: 1.4rem;
+    }
 
-/* Metric Label */
-[data-testid="stMetricLabel"]{
-    font-size:16px;
-    font-weight:600;
-}
+    .hero-title {
+        font-size: 2rem;
+        font-weight: 750;
+        margin-bottom: 0.35rem;
+    }
 
-/* Metric Value */
-[data-testid="stMetricValue"]{
-    font-size:28px !important;
-    font-weight:600;
-}
+    .hero-subtitle {
+        font-size: 1rem;
+        color: #667085;
+        margin-bottom: 0;
+    }
 
-/* Button */
-.stButton>button{
-    width:100%;
-    border-radius:10px;
-    height:48px;
-}
+    [data-testid="stMetric"] {
+        background: white;
+        border: 1px solid #E5E7EB;
+        border-radius: 14px;
+        padding: 0.8rem 1rem;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+    }
 
-/* Download Button */
-.stDownloadButton>button{
-    width:100%;
-    border-radius:10px;
-}
+    [data-testid="stMetricLabel"] {
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
 
-</style>
-""", unsafe_allow_html=True)
+    [data-testid="stMetricValue"] {
+        font-size: 1.35rem;
+        font-weight: 700;
+    }
+
+    .stButton > button {
+        width: 100%;
+        min-height: 46px;
+        border-radius: 11px;
+        font-weight: 650;
+    }
+
+    .stDownloadButton > button {
+        width: 100%;
+        border-radius: 10px;
+    }
+
+    textarea {
+        font-size: 0.95rem !important;
+        line-height: 1.55 !important;
+    }
+
+    [data-testid="stFileUploader"] {
+        border: 1px dashed #C7C9FF;
+        border-radius: 14px;
+        padding: 0.5rem;
+        background: rgba(108, 99, 255, 0.03);
+    }
+
+    [data-baseweb="tab-list"] {
+        gap: 0.5rem;
+    }
+
+    [data-baseweb="tab"] {
+        border-radius: 10px 10px 0 0;
+        padding-left: 1rem;
+        padding-right: 1rem;
+        font-weight: 600;
+    }
+
+    hr {
+        margin-top: 1.4rem;
+        margin-bottom: 1.4rem;
+    }
+
+    .footer {
+        text-align: center;
+        color: #8A94A6;
+        font-size: 0.85rem;
+        padding-top: 1rem;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
 
 # -------------------------------------------------
 # Session State
@@ -109,10 +172,17 @@ Supported Files
 # Title
 # -------------------------------------------------
 
-st.title("📝 AI Meeting Assistant")
-
-st.caption(
-    "Generate professional meeting notes and ask questions about your meeting transcript."
+st.markdown(
+    """
+    <div class="hero-card">
+        <div class="hero-title">📝 AI Meeting Assistant</div>
+        <p class="hero-subtitle">
+            Turn transcripts into structured notes, ask follow-up questions,
+            and export your meeting summary in seconds.
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True,
 )
 
 # -------------------------------------------------
@@ -133,18 +203,18 @@ with left:
 
     transcript = transcript_section()
 
-col1, col2 = st.columns(2)
+metric_col1, metric_col2 = st.columns(2)
 
-with col1:
+with metric_col1:
     st.metric(
-        "📝 Words",
-        len(transcript.split())
+        label="📝 Words",
+        value=f"{len(transcript.split()):,}"
     )
 
-with col2:
+with metric_col2:
     st.metric(
-        "💬 Chat Messages",
-        len(st.session_state.get("messages", []))
+        label="💬 Chat Messages",
+        value=len(st.session_state.get("messages", []))
     )
 
 st.divider()
@@ -152,15 +222,38 @@ st.divider()
 # -------------------------------------------------
 # Right Column
 # -------------------------------------------------
-tab1, tab2 = st.tabs(
-    ["📝 Meeting Notes", "💬 Chat"]
+notes_tab, chat_tab, help_tab = st.tabs(
+    [
+        "📝 Meeting Notes",
+        "💬 Chat",
+        "ℹ️ How to Use",
+    ]
 )
 
-with tab1:
+with notes_tab:
     notes_section(transcript)
 
-with tab2:
+with chat_tab:
     chat_section(transcript)
+
+with help_tab:
+    st.markdown(
+        """
+        ### How to use the assistant
+
+        1. Paste a transcript or upload a TXT, PDF, or DOCX file.
+        2. Open **Meeting Notes** and generate structured notes.
+        3. Open **Chat** to ask questions about the transcript.
+        4. Download the notes as Markdown, DOCX, or PDF.
+
+        ### Example questions
+
+        - What decisions were made?
+        - Who owns each action item?
+        - What deadlines were mentioned?
+        - What blockers or risks were discussed?
+        """
+    )
 
 # ---------------------------------------
 # Chat with Transcript
@@ -177,3 +270,12 @@ if transcript:
     st.success("✅ Transcript loaded successfully")
 else:
     st.info("📄 Paste or upload a meeting transcript to begin.")
+
+st.markdown(
+    """
+    <div class="footer">
+        Built with Streamlit, Groq and Python
+    </div>
+    """,
+    unsafe_allow_html=True,
+)

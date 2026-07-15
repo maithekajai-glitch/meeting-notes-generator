@@ -46,8 +46,8 @@ def transcript_section():
 
         if "messages" in st.session_state:
             st.session_state.messages = []
-
-        st.session_state.last_transcript = transcript
+            st.session_state.notes = ""
+            st.session_state.last_transcript = transcript
 
     st.caption(f"Characters: {len(transcript)}")
 
