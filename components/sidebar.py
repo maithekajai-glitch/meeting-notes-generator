@@ -94,7 +94,6 @@ def show_sidebar():
     "messages",
     "meeting_analytics",
     "email_draft",
-    "email_recipient",
     "email_tone",
     "current_transcript",
     "audio_transcript",

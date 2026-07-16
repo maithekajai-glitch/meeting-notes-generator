@@ -405,11 +405,10 @@ Meeting transcript:
 
 def generate_followup_email(
     transcript: str,
-    recipient: str = "Team",
     tone: str = "Professional",
     meeting_type: str = "General Meeting",
 ) -> str:
-    """Generate a polished follow-up email from a meeting transcript."""
+    """Generate a professional follow-up email from a meeting transcript."""
 
     if not transcript.strip():
         raise ValueError("Transcript cannot be empty.")
@@ -432,8 +431,8 @@ def generate_followup_email(
                 "content": (
                     "You are a professional business communication assistant. "
                     "Write accurate follow-up emails using only information "
-                    "supported by the supplied meeting transcript. "
-                    "Do not invent names, decisions, deadlines, or tasks."
+                    "supported by the meeting transcript. Do not invent names, "
+                    "decisions, deadlines, or tasks."
                 ),
             },
             {
@@ -441,30 +440,24 @@ def generate_followup_email(
                 "content": f"""
 Create a {tone.lower()} follow-up email for a {meeting_type}.
 
-Recipient:
-{recipient}
-
-Use this exact structure:
+Use exactly this structure:
 
 Subject: [clear and specific email subject]
 
-Dear [recipient],
+Dear Sir/Ma'am,
 
-[Brief opening sentence thanking attendees or acknowledging the meeting.]
+[Brief opening sentence thanking the recipient or acknowledging the meeting.]
 
 Meeting Summary:
-[Short paragraph summarizing the discussion.]
+[Short paragraph summarizing the meeting.]
 
 Key Decisions:
-- [Confirmed decision]
 - [Confirmed decision]
 
 Action Items:
 - [Owner] — [Task] — [Deadline]
-- [Owner] — [Task] — [Deadline]
 
 Next Steps:
-- [Next step]
 - [Next step]
 
 Open Questions:
@@ -476,7 +469,9 @@ Best regards,
 Rules:
 
 - Use only information supported by the transcript.
-- Keep the email easy to scan.
+- Always begin the greeting with "Dear Sir/Ma'am,".
+- Do not ask for or insert a recipient name.
+- Keep the email professional and easy to scan.
 - Preserve names and deadlines exactly as stated.
 - Include only confirmed decisions.
 - Include only genuine commitments as action items.
@@ -484,7 +479,7 @@ Rules:
 - Write "No confirmed decisions were recorded" when needed.
 - Write "No action items were recorded" when needed.
 - Write "No open questions were recorded" when needed.
-- Do not include Markdown headings using # symbols.
+- Do not use Markdown headings with # symbols.
 - Do not write anything before "Subject:".
 
 Meeting transcript:
