@@ -12,15 +12,6 @@ def show_sidebar():
         # Header
         # ----------------------------------------
 
-        st.sidebar.markdown(
-    """
-### AI Meeting Assistant
-AI-powered meeting intelligence workspace.
-"""
-)
-
-        st.divider()
-
         # ----------------------------------------
         # Supported Inputs
         # ----------------------------------------
