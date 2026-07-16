@@ -1,7 +1,7 @@
 import streamlit as st
 
 st.sidebar.image(
-    "assets/logo.png",
+    "assets/favicon.png",
     use_container_width=True,
 )
 
