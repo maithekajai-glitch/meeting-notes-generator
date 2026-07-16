@@ -8,7 +8,7 @@ App link - https://meeting-notes-generator-updvhtbngrhdps2q9xpzmp.streamlit.app/
 
 
 <p align="center">
-  <img src="assets/logo.png" width="100">
+  <img src="assets/logo.png" width="200">
 </p>
 
 <h1 align="center">AI Meeting Assistant</h1>
