@@ -211,127 +211,6 @@ def transcribe_media(media_file) -> str:
 
     return transcript
 
-def extract_action_items(transcript: str) -> list[dict[str, str]]:
-    """Extract structured action items from a meeting transcript."""
-
-    if not transcript.strip():
-        return []
-
-    response = client.chat.completions.create(
-        model=MODEL_NAME,
-        messages=[
-            {
-                "role": "system",
-                "content": (
-                    "You extract action items from meeting transcripts. "
-                    "Return only valid JSON. Do not include Markdown, explanations, "
-                    "or code fences. Do not invent information."
-                ),
-            },
-            {
-                "role": "user",
-                "content": f"""
-Extract every confirmed action item from the meeting transcript.
-
-Return a JSON array using exactly this structure:
-
-[
-  {{
-    "owner": "Person responsible",
-    "task": "Specific task",
-    "deadline": "Deadline stated in transcript",
-    "priority": "High, Medium, Low, or Not specified",
-    "status": "Pending"
-  }}
-]
-
-Rules:
-
-1. Include only genuine tasks or commitments.
-2. Do not treat general discussion as an action item.
-3. Preserve names and deadlines exactly as stated.
-4. Use "Not specified" when the owner or deadline is missing.
-5. Set status to "Pending".
-6. Infer priority only when clearly supported:
-   - High: urgent, critical, blocking, or immediate
-   - Medium: normal committed work
-   - Low: optional or non-urgent
-   - Otherwise: Not specified
-7. If there are no action items, return [].
-8. Return only valid JSON.
-
-Meeting transcript:
-
-{transcript}
-""",
-            },
-        ],
-        temperature=0.0,
-        max_completion_tokens=1200,
-    )
-
-    raw_output = response.choices[0].message.content or "[]"
-
-    # Remove accidental Markdown code fences.
-    cleaned_output = re.sub(
-        r"^```(?:json)?\s*|\s*```$",
-        "",
-        raw_output.strip(),
-        flags=re.IGNORECASE,
-    )
-
-    try:
-        parsed_items = json.loads(cleaned_output)
-    except json.JSONDecodeError:
-        return []
-
-    if not isinstance(parsed_items, list):
-        return []
-
-    validated_items: list[dict[str, str]] = []
-
-    for item in parsed_items:
-        if not isinstance(item, dict):
-            continue
-
-        task = str(item.get("task", "")).strip()
-
-        if not task:
-            continue
-
-        priority = str(
-            item.get("priority", "Not specified")
-        ).strip()
-
-        if priority not in {
-            "High",
-            "Medium",
-            "Low",
-            "Not specified",
-        }:
-            priority = "Not specified"
-
-        validated_items.append(
-            {
-                "Owner": str(
-                    item.get("owner", "Not specified")
-                ).strip()
-                or "Not specified",
-                "Task": task,
-                "Deadline": str(
-                    item.get("deadline", "Not specified")
-                ).strip()
-                or "Not specified",
-                "Priority": priority,
-                "Status": str(
-                    item.get("status", "Pending")
-                ).strip()
-                or "Pending",
-            }
-        )
-
-    return validated_items
-
 
 def extract_meeting_analytics(transcript: str) -> dict[str, Any]:
     """Extract structured analytics from a meeting transcript."""
@@ -356,18 +235,12 @@ def extract_meeting_analytics(transcript: str) -> dict[str, Any]:
                 "content": f"""
 Analyze the meeting transcript and return one valid JSON object.
 
-Use exactly this structure:
+Use this structure:
 
 {{
-  "participants": [
-    "Participant name"
-  ],
-  "topics": [
-    "Main topic"
-  ],
-  "decisions": [
-    "Confirmed decision"
-  ],
+  "participants": [],
+  "topics": [],
+  "decisions": [],
   "action_items": [
     {{
       "owner": "Person responsible",
@@ -382,29 +255,20 @@ Use exactly this structure:
       "event": "Associated task or event"
     }}
   ],
-  "risks": [
-    "Risk or blocker"
-  ],
-  "open_questions": [
-    "Unresolved question"
-  ],
+  "risks": [],
+  "open_questions": [],
   "sentiment": {{
     "label": "Positive, Neutral, Mixed, or Negative",
-    "explanation": "Brief explanation supported by the transcript"
+    "explanation": "Brief explanation"
   }},
-  "summary": "A concise two or three sentence overview"
+  "summary": "A concise meeting overview"
 }}
 
 Rules:
-
-1. Use only information found in the transcript.
-2. Do not invent participant names, dates, deadlines or decisions.
-3. Include only confirmed decisions under decisions.
-4. Include only genuine commitments under action_items.
-5. Use empty arrays when no items are found.
-6. Use "Not specified" when an action-item field is missing.
-7. Keep topics concise.
-8. Return JSON only, with no Markdown or code fences.
+- Use only information found in the transcript.
+- Do not invent names, decisions, dates, or tasks.
+- Use empty arrays when nothing is found.
+- Return JSON only.
 
 Meeting transcript:
 
@@ -419,7 +283,6 @@ Meeting transcript:
 
     raw_output = response.choices[0].message.content or "{}"
 
-    # Remove accidental Markdown fences if the model includes them.
     cleaned_output = re.sub(
         r"^```(?:json)?\s*|\s*```$",
         "",
@@ -439,7 +302,6 @@ Meeting transcript:
             "The analytics response must be a JSON object."
         )
 
-    # Ensure every expected field exists.
     analytics.setdefault("participants", [])
     analytics.setdefault("topics", [])
     analytics.setdefault("decisions", [])
@@ -451,30 +313,10 @@ Meeting transcript:
         "sentiment",
         {
             "label": "Neutral",
-            "explanation": "No sentiment analysis was available.",
+            "explanation": "No sentiment information was available.",
         },
     )
     analytics.setdefault("summary", "")
 
-    # Validate list fields.
-    list_fields = [
-        "participants",
-        "topics",
-        "decisions",
-        "action_items",
-        "deadlines",
-        "risks",
-        "open_questions",
-    ]
-
-    for field in list_fields:
-        if not isinstance(analytics[field], list):
-            analytics[field] = []
-
-    if not isinstance(analytics["sentiment"], dict):
-        analytics["sentiment"] = {
-            "label": "Neutral",
-            "explanation": "No sentiment analysis was available.",
-        }
-
     return analytics
+    
