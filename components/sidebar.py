@@ -1,81 +1,126 @@
 import streamlit as st
 
 
-def show_sidebar() -> None:
+def show_sidebar():
     with st.sidebar:
-        st.markdown("## 🤖 Meeting Assistant")
 
-        st.caption(
-            "AI-powered meeting intelligence workspace"
-        )
+        # ----------------------------------------
+        # Header
+        # ----------------------------------------
+
+        st.markdown("## 🤖 AI Meeting Assistant")
+
+        st.caption("AI-Powered Meeting Intelligence")
 
         st.divider()
+
+        # ----------------------------------------
+        # Connection Status
+        # ----------------------------------------
 
         st.success(
-            "Groq AI connected",
-            icon="✅",
-        )
-
-        st.markdown("### Navigation")
-
-        st.markdown(
-            """
-🏠 **Dashboard**
-
-📄 **Meeting source**
-
-📝 **Generated notes**
-
-💬 **Transcript chat**
-
-📥 **Downloads**
-"""
+            "Groq AI Connected",
+            icon="🟢"
         )
 
         st.divider()
 
-        st.markdown("### Supported sources")
+        # ----------------------------------------
+        # Supported Inputs
+        # ----------------------------------------
 
-        st.markdown(
-            """
-- TXT, PDF and DOCX
-- MP3, WAV and M4A
-- MP4, MPEG and WebM
-- Browser microphone recording
-"""
-        )
+        st.markdown("### 📥 Import")
+
+        st.markdown("""
+📄 **Documents**
+
+- TXT
+- PDF
+- DOCX
+
+🎙 **Audio**
+
+- MP3
+- WAV
+- M4A
+
+🎥 **Video**
+
+- MP4
+- MOV
+- AVI
+- WEBM
+""")
 
         st.divider()
 
-        notes_exist = bool(st.session_state.get("notes", ""))
-        messages = st.session_state.get("messages", [])
+        # ----------------------------------------
+        # AI Features
+        # ----------------------------------------
 
-        st.markdown("### Session")
+        st.markdown("### ⚡ AI Capabilities")
 
-        st.caption(
-            f"Notes: {'Ready' if notes_exist else 'Not generated'}"
-        )
+        st.markdown("""
+✅ Smart Meeting Notes
 
-        st.caption(
-            f"Messages: {len(messages)}"
-        )
+💬 Transcript Chat
+
+🎤 Audio Transcription
+
+🎥 Video Transcription
+
+📌 Action Item Detection
+
+📅 Deadline Extraction
+
+📋 AI Meeting Summary
+
+📤 Export (PDF / DOCX / Markdown)
+""")
+
+        st.divider()
+
+        # ----------------------------------------
+        # Current Session
+        # ----------------------------------------
+
+        st.markdown("### 📊 Current Session")
+
+        st.caption("Session data is stored until you clear it.")
+
+        st.divider()
+
+        # ----------------------------------------
+        # Clear Session
+        # ----------------------------------------
 
         if st.button(
-            "🗑️ Clear session",
-            key="clear_session_button",
+            "🗑 Clear Session",
             use_container_width=True,
+            type="primary",
         ):
-            keys_to_clear = [
+
+            keys = [
                 "notes",
                 "messages",
-                "last_transcript",
+                "current_transcript",
                 "audio_transcript",
                 "video_transcript",
                 "recorded_transcript",
                 "pasted_transcript",
             ]
 
-            for key in keys_to_clear:
+            for key in keys:
                 st.session_state.pop(key, None)
 
+            st.success("Session cleared!")
+
             st.rerun()
+
+        st.divider()
+
+        # ----------------------------------------
+        # Footer
+        # ----------------------------------------
+
+        st.caption("🚀 Powered by Groq + Streamlit")

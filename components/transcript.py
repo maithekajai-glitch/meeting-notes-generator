@@ -290,5 +290,7 @@ def transcript_section() -> str:
     _reset_results_when_transcript_changes(transcript)
 
     st.caption(f"Words: {len(transcript.split()):,}")
+    # Save transcript for the sidebar
+    st.session_state["current_transcript"] = transcript
 
     return transcript
