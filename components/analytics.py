@@ -3,7 +3,6 @@ from typing import Any
 
 import pandas as pd
 import streamlit as st
-
 from utils.ai import extract_meeting_analytics
 
 
