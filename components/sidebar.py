@@ -95,6 +95,7 @@ def show_sidebar():
                 "current_transcript",
                 "audio_transcript",
                 "video_transcript",
+                "meeting_analytics",
                 "recorded_transcript",
                 "pasted_transcript",
             ]

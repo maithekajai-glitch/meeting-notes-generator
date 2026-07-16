@@ -1,5 +1,6 @@
 import streamlit as st
 
+from components.analytics import analytics_section
 from components.chat import chat_section
 from components.notes import notes_section
 from components.sidebar import show_sidebar
@@ -462,16 +463,22 @@ st.divider()
 # Workspace
 # -------------------------------------------------
 
-notes_tab, chat_tab, guide_tab = st.tabs(
-    [
-        "📝 Meeting Notes",
-        "💬 Ask the Meeting",
-        "✨ Quick Guide",
-    ]
+notes_tab, analytics_tab, chat_tab, guide_tab = (
+    st.tabs(
+        [
+            "📝 Meeting Notes",
+            "📊 Analytics",
+            "💬 Ask the Meeting",
+            "✨ Quick Guide",
+        ]
+    )
 )
 
 with notes_tab:
     notes_section(transcript)
+
+with analytics_tab:
+    analytics_section(transcript)
 
 with chat_tab:
     chat_section(transcript)
@@ -499,28 +506,15 @@ with guide_tab:
 
             st.markdown(
                 """
-- Generate structured notes
-- Identify decisions and action items
-- Ask transcript-grounded questions
-- Continue with follow-up questions
-- Export PDF, DOCX, or Markdown
+- Generate structured meeting notes
+- Analyze meeting activity
+- Review decisions and action items
+- Identify deadlines and risks
+- Ask transcript-based questions
+- Export the results
 """
             )
-
-    with st.container(border=True):
-        st.markdown("### 💡 Example questions")
-
-        st.markdown(
-            """
-- What decisions were confirmed?
-- Who owns each action item?
-- Which deadlines were mentioned?
-- What risks or blockers remain?
-- Summarize the meeting in five bullet points.
-"""
-        )
-
-
+            
 # -------------------------------------------------
 # Footer
 # -------------------------------------------------
