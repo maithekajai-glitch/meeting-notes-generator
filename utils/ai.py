@@ -402,4 +402,109 @@ Meeting transcript:
     analytics.setdefault("summary", "")
 
     return analytics
+
+def generate_followup_email(
+    transcript: str,
+    recipient: str = "Team",
+    tone: str = "Professional",
+    meeting_type: str = "General Meeting",
+) -> str:
+    """Generate a polished follow-up email from a meeting transcript."""
+
+    if not transcript.strip():
+        raise ValueError("Transcript cannot be empty.")
+
+    valid_tones = {
+        "Professional",
+        "Friendly",
+        "Formal",
+        "Concise",
+    }
+
+    if tone not in valid_tones:
+        tone = "Professional"
+
+    response = client.chat.completions.create(
+        model=MODEL_NAME,
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "You are a professional business communication assistant. "
+                    "Write accurate follow-up emails using only information "
+                    "supported by the supplied meeting transcript. "
+                    "Do not invent names, decisions, deadlines, or tasks."
+                ),
+            },
+            {
+                "role": "user",
+                "content": f"""
+Create a {tone.lower()} follow-up email for a {meeting_type}.
+
+Recipient:
+{recipient}
+
+Use this exact structure:
+
+Subject: [clear and specific email subject]
+
+Dear [recipient],
+
+[Brief opening sentence thanking attendees or acknowledging the meeting.]
+
+Meeting Summary:
+[Short paragraph summarizing the discussion.]
+
+Key Decisions:
+- [Confirmed decision]
+- [Confirmed decision]
+
+Action Items:
+- [Owner] — [Task] — [Deadline]
+- [Owner] — [Task] — [Deadline]
+
+Next Steps:
+- [Next step]
+- [Next step]
+
+Open Questions:
+- [Unresolved question]
+
+Best regards,
+[Your Name]
+
+Rules:
+
+- Use only information supported by the transcript.
+- Keep the email easy to scan.
+- Preserve names and deadlines exactly as stated.
+- Include only confirmed decisions.
+- Include only genuine commitments as action items.
+- Use "Not specified" when an owner or deadline is missing.
+- Write "No confirmed decisions were recorded" when needed.
+- Write "No action items were recorded" when needed.
+- Write "No open questions were recorded" when needed.
+- Do not include Markdown headings using # symbols.
+- Do not write anything before "Subject:".
+
+Meeting transcript:
+
+{transcript}
+""",
+            },
+        ],
+        temperature=0.2,
+        max_completion_tokens=1200,
+    )
+
+    email = response.choices[0].message.content or ""
+
+    if not email.strip():
+        raise RuntimeError("The email draft was empty.")
+
+    return email.strip()
+
+
+    
+
     

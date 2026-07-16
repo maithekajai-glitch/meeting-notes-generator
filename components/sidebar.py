@@ -90,15 +90,18 @@ def show_sidebar():
         ):
 
             keys = [
-                "notes",
-                "messages",
-                "current_transcript",
-                "audio_transcript",
-                "video_transcript",
-                "meeting_analytics",
-                "recorded_transcript",
-                "pasted_transcript",
-            ]
+    "notes",
+    "messages",
+    "meeting_analytics",
+    "email_draft",
+    "email_recipient",
+    "email_tone",
+    "current_transcript",
+    "audio_transcript",
+    "video_transcript",
+    "recorded_transcript",
+    "pasted_transcript",
+]
 
             for key in keys:
                 st.session_state.pop(key, None)

@@ -5,6 +5,7 @@ from components.chat import chat_section
 from components.notes import notes_section
 from components.sidebar import show_sidebar
 from components.transcript import transcript_section
+from components.email_draft import email_draft_section
 
 
 # -------------------------------------------------
@@ -463,15 +464,14 @@ st.divider()
 # Workspace
 # -------------------------------------------------
 
-notes_tab, analytics_tab, chat_tab, guide_tab = (
-    st.tabs(
-        [
-            "📝 Meeting Notes",
-            "📊 Analytics",
-            "💬 Ask the Meeting",
-            "✨ Quick Guide",
-        ]
-    )
+notes_tab, analytics_tab, email_tab, chat_tab, guide_tab = st.tabs(
+    [
+        "📝 Meeting Notes",
+        "📊 Analytics",
+        "📧 Follow-up Email",
+        "💬 Ask the Meeting",
+        "✨ Quick Guide",
+    ]
 )
 
 with notes_tab:
@@ -479,6 +479,9 @@ with notes_tab:
 
 with analytics_tab:
     analytics_section(transcript)
+
+with email_tab:
+    email_draft_section(transcript)
 
 with chat_tab:
     chat_section(transcript)
@@ -507,14 +510,13 @@ with guide_tab:
             st.markdown(
                 """
 - Generate structured meeting notes
-- Analyze meeting activity
-- Review decisions and action items
-- Identify deadlines and risks
+- Review meeting analytics
+- Draft a follow-up email
 - Ask transcript-based questions
 - Export the results
 """
             )
-            
+
 # -------------------------------------------------
 # Footer
 # -------------------------------------------------

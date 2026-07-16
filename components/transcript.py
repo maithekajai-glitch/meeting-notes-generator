@@ -28,9 +28,10 @@ def _reset_results_when_transcript_changes(transcript: str) -> None:
         st.session_state.last_transcript = ""
 
     if transcript != st.session_state.last_transcript:
-        st.session_state.messages = []
+     st.session_state.messages = []
     st.session_state.notes = ""
     st.session_state.meeting_analytics = {}
+    st.session_state.email_draft = ""
     st.session_state.last_transcript = transcript
 
 def _show_transcript_preview(transcript: str) -> None:
