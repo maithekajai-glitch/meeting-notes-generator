@@ -14,7 +14,7 @@ from components.email_draft import email_draft_section
 
 st.set_page_config(
     page_title="AI Meeting Assistant",
-    page_icon="📝",
+    page_icon="assets/favicon.png",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -38,348 +38,369 @@ if "messages" not in st.session_state:
 st.markdown(
     """
 <style>
-:root {
-    --app-bg: #F7F8FC;
-    --surface: #FFFFFF;
-    --surface-soft: #F1F3F8;
-    --border: #DDE1EA;
-    --text-main: #172033;
-    --text-muted: #667085;
-    --accent: #6D5DFB;
-    --accent-dark: #5848E5;
-    --accent-light: #EDEAFF;
+
+/* ---------- App Background ---------- */
+
+.stApp{
+background:
+radial-gradient(circle at top left, rgba(124,58,237,.14), transparent 28%),
+radial-gradient(circle at bottom right, rgba(59,130,246,.12), transparent 32%),
+linear-gradient(180deg,#F8FAFC,#EEF4FF);
 }
 
-/* Entire application */
-.stApp {
-    background:
-        radial-gradient(
-            circle at 85% 2%,
-            rgba(109, 93, 251, 0.12),
-            transparent 27rem
-        ),
-        var(--app-bg);
-    color: var(--text-main);
+/* ---------- Page ---------- */
+
+.block-container{
+max-width:1280px;
+padding-top:1.5rem;
+padding-bottom:2.5rem;
 }
 
-.block-container {
-    max-width: 1280px;
-    padding-top: 1.5rem;
-    padding-bottom: 3rem;
+/* ---------- Hero ---------- */
+
+.hero-section{
+
+padding:2.2rem;
+
+border-radius:24px;
+
+background:
+linear-gradient(
+135deg,
+rgba(255,255,255,.82),
+rgba(255,255,255,.65)
+);
+
+backdrop-filter:blur(18px);
+
+border:1px solid rgba(255,255,255,.55);
+
+box-shadow:
+0 20px 60px rgba(60,72,88,.12);
+
+margin-bottom:2rem;
+
 }
 
-h1,
-h2,
-h3,
-h4,
-p,
-label {
-    color: var(--text-main);
+.hero-badge{
+
+display:inline-block;
+
+padding:.45rem .8rem;
+
+border-radius:999px;
+
+background:#F3E8FF;
+
+color:#7C3AED;
+
+font-size:.8rem;
+
+font-weight:700;
+
+margin-bottom:1rem;
+
 }
 
-h1,
-h2,
-h3 {
-    letter-spacing: -0.025em;
+.hero-title{
+
+font-size:2.7rem;
+
+font-weight:800;
+
+color:#111827;
+
+margin-bottom:.6rem;
+
 }
 
-/* Hero card */
-.hero-container {
-    padding: 2rem 2.2rem;
-    margin-bottom: 1.5rem;
-    border: 1px solid rgba(109, 93, 251, 0.22);
-    border-radius: 22px;
-    background:
-        radial-gradient(
-            circle at top right,
-            rgba(109, 93, 251, 0.16),
-            transparent 35%
-        ),
-        linear-gradient(
-            135deg,
-            #FFFFFF,
-            #F1EFFF
-        );
-    box-shadow: 0 14px 38px rgba(30, 41, 59, 0.08);
+.hero-description{
+
+font-size:1.08rem;
+
+line-height:1.8;
+
+color:#64748B;
+
+max-width:780px;
+
 }
 
-/* Metrics */
-[data-testid="stMetric"] {
-    min-height: 105px;
-    padding: 1rem 1.15rem;
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    background: var(--surface);
-    box-shadow: 0 7px 22px rgba(30, 41, 59, 0.06);
+/* ---------- Glass Cards ---------- */
+
+[data-testid="stVerticalBlockBorderWrapper"]{
+
+background:
+rgba(255,255,255,.72);
+
+backdrop-filter:blur(18px);
+
+border:1px solid rgba(255,255,255,.65);
+
+border-radius:20px;
+
+box-shadow:
+0 15px 40px rgba(30,41,59,.08);
+
+padding:.4rem;
+
+transition:.25s;
+
 }
 
-[data-testid="stMetric"]:hover {
-    border-color: rgba(109, 93, 251, 0.5);
-    transform: translateY(-1px);
-    transition: 0.15s ease;
+[data-testid="stVerticalBlockBorderWrapper"]:hover{
+
+transform:translateY(-3px);
+
+box-shadow:
+0 22px 50px rgba(124,58,237,.12);
+
 }
 
-[data-testid="stMetricLabel"] {
-    color: var(--text-muted);
-    font-size: 0.84rem;
-    font-weight: 700;
+/* ---------- Metrics ---------- */
+
+[data-testid="stMetric"]{
+
+background:white;
+
+border-radius:18px;
+
+padding:1rem;
+
+border:none;
+
+box-shadow:
+0 10px 25px rgba(30,41,59,.07);
+
 }
 
-[data-testid="stMetricValue"] {
-    color: var(--text-main);
-    font-size: 1.45rem;
-    font-weight: 800;
+[data-testid="stMetricValue"]{
+
+font-size:1.7rem;
+
+font-weight:800;
+
+color:#111827;
+
 }
 
-/* Main buttons */
+[data-testid="stMetricLabel"]{
+
+color:#64748B;
+
+}
+
+/* ---------- Buttons ---------- */
+
 .stButton > button {
+
     width: 100%;
-    min-height: 46px;
-    border: 1px solid var(--accent);
-    border-radius: 12px;
+
+    border: none;
+
+    border-radius: 14px;
+
     background: linear-gradient(
         135deg,
-        var(--accent),
-        var(--accent-dark)
+        #7C3AED,
+        #8B5CF6
     );
-    color: #FFFFFF;
+
+    color: #FFFFFF !important;
+
     font-weight: 700;
-    box-shadow: 0 7px 18px rgba(109, 93, 251, 0.2);
-    transition:
-        transform 0.15s ease,
-        box-shadow 0.15s ease;
+
+    font-size: 16px;
+
+    height: 48px;
+
+    transition: .2s;
+
+    box-shadow:
+        0 10px 20px rgba(124,58,237,.22);
+}
+
+.stButton > button p,
+.stButton > button span,
+.stButton > button div {
+
+    color: #FFFFFF !important;
 }
 
 .stButton > button:hover {
-    border-color: var(--accent-dark);
-    background: linear-gradient(
-        135deg,
-        #796AFF,
-        var(--accent)
-    );
-    color: #FFFFFF;
-    transform: translateY(-1px);
-    box-shadow: 0 10px 24px rgba(109, 93, 251, 0.28);
+
+    color: #FFFFFF !important;
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 18px 35px rgba(124,58,237,.28);
 }
 
-.stButton > button:disabled {
-    border-color: #D8DCE5;
-    background: #E8EAF0;
-    color: #98A2B3;
-    box-shadow: none;
+.stButton > button:focus,
+.stButton > button:active {
+
+    color: #FFFFFF !important;
 }
 
-/* Download buttons */
-.stDownloadButton > button {
-    width: 100%;
-    min-height: 43px;
-    border: 1px solid var(--border);
-    border-radius: 11px;
-    background: var(--surface);
-    color: var(--text-main);
-    font-weight: 700;
+/* ---------- Download Button ---------- */
+
+.stDownloadButton>button{
+
+background:white;
+
+border:1px solid #E2E8F0;
+
+border-radius:14px;
+
+font-weight:600;
+
+height:45px;
+
 }
 
-.stDownloadButton > button:hover {
-    border-color: var(--accent);
-    background: var(--accent-light);
-    color: var(--accent-dark);
+/* ---------- Tabs ---------- */
+
+[data-baseweb="tab-list"]{
+
+background:rgba(255,255,255,.55);
+
+backdrop-filter:blur(14px);
+
+padding:.4rem;
+
+border-radius:18px;
+
+gap:.4rem;
+
 }
 
-/* Tabs */
-[data-baseweb="tab-list"] {
-    gap: 0.4rem;
-    padding: 0.4rem;
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    background: #EEF0F6;
+[data-baseweb="tab"]{
+
+border-radius:12px;
+
+font-weight:700;
+
+color:#64748B;
+
 }
 
-[data-baseweb="tab"] {
-    min-height: 45px;
-    padding-left: 1.1rem;
-    padding-right: 1.1rem;
-    border-radius: 10px;
-    color: var(--text-muted);
-    font-weight: 700;
+[aria-selected="true"][data-baseweb="tab"]{
+
+background:
+linear-gradient(
+135deg,
+#7C3AED,
+#8B5CF6
+);
+
+color:white;
+
+box-shadow:
+0 8px 20px rgba(124,58,237,.22);
+
 }
 
-[data-baseweb="tab"]:hover {
-    color: var(--text-main);
-    background: #FFFFFF;
+/* ---------- File Upload ---------- */
+
+[data-testid="stFileUploader"]{
+
+border-radius:18px;
+
+background:white;
+
+border:2px dashed #C4B5FD;
+
 }
 
-[aria-selected="true"][data-baseweb="tab"] {
-    color: #FFFFFF;
-    background: var(--accent);
-    box-shadow: 0 5px 16px rgba(109, 93, 251, 0.22);
+/* ---------- Text Area ---------- */
+
+textarea{
+
+border-radius:15px !important;
+
+border:1px solid #E2E8F0 !important;
+
+background:white !important;
+
 }
 
-/* File upload */
-[data-testid="stFileUploader"] {
-    padding: 0.5rem;
-    border: 1px dashed rgba(109, 93, 251, 0.65);
-    border-radius: 16px;
-    background: rgba(109, 93, 251, 0.035);
+/* ---------- Chat ---------- */
+
+[data-testid="stChatMessage"]{
+
+background:white;
+
+border-radius:18px;
+
+border:none;
+
+box-shadow:
+0 8px 20px rgba(0,0,0,.05);
+
 }
 
-[data-testid="stFileUploaderDropzone"] {
-    min-height: 145px;
-    border-radius: 13px;
-    background: #FFFFFF;
+/* ---------- Sidebar ---------- */
+
+[data-testid="stSidebar"]{
+
+background:
+linear-gradient(
+180deg,
+#FFFFFF,
+#F8FAFC
+);
+
+border-right:1px solid #E2E8F0;
+
 }
 
-[data-testid="stFileUploaderDropzoneInstructions"] {
-    color: var(--text-muted);
+/* ---------- Expander ---------- */
+
+[data-testid="stExpander"]{
+
+border-radius:16px;
+
+overflow:hidden;
+
 }
 
-/* Text input */
-textarea,
-input {
-    color: var(--text-main) !important;
+/* ---------- Scrollbar ---------- */
+
+::-webkit-scrollbar{
+
+width:8px;
+
 }
 
-textarea {
-    border: 1px solid var(--border) !important;
-    border-radius: 13px !important;
-    background: #FFFFFF !important;
-    font-size: 0.95rem !important;
-    line-height: 1.6 !important;
+::-webkit-scrollbar-thumb{
+
+background:#C4B5FD;
+
+border-radius:20px;
+
 }
 
-textarea:focus {
-    border-color: var(--accent) !important;
-    box-shadow: 0 0 0 1px var(--accent) !important;
+/* ---------- Footer ---------- */
+
+.app-footer{
+
+margin-top:2rem;
+
+padding-top:1rem;
+
+text-align:center;
+
+color:#64748B;
+
 }
 
-/* Dropdown */
-[data-baseweb="select"] > div {
-    border-color: var(--border) !important;
-    border-radius: 12px !important;
-    background: #FFFFFF !important;
-    color: var(--text-main) !important;
+footer{
+
+visibility:hidden;
+
 }
 
-[data-baseweb="popover"] {
-    color: var(--text-main);
-}
-
-[data-baseweb="menu"] {
-    background: #FFFFFF !important;
-}
-
-[role="option"] {
-    color: var(--text-main) !important;
-    background: #FFFFFF !important;
-}
-
-[role="option"]:hover {
-    background: var(--accent-light) !important;
-}
-
-/* Chat */
-[data-testid="stChatMessage"] {
-    padding: 0.95rem 1rem;
-    margin-bottom: 0.75rem;
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    background: var(--surface);
-    box-shadow: 0 5px 16px rgba(30, 41, 59, 0.05);
-}
-
-[data-testid="stChatMessage"]:has(
-    [data-testid="stChatMessageAvatarUser"]
-) {
-    margin-left: 7%;
-    border-color: rgba(109, 93, 251, 0.35);
-    background: #F3F1FF;
-}
-
-[data-testid="stChatMessage"]:has(
-    [data-testid="stChatMessageAvatarAssistant"]
-) {
-    margin-right: 7%;
-}
-
-[data-testid="stChatInput"] {
-    border: 1px solid var(--border);
-    border-radius: 15px;
-    background: #FFFFFF;
-}
-
-/* Alerts and expanders */
-[data-testid="stAlert"] {
-    border-radius: 13px;
-}
-
-[data-testid="stExpander"] {
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    background: var(--surface);
-}
-
-[data-testid="stVerticalBlockBorderWrapper"] {
-    border-color: var(--border) !important;
-    border-radius: 15px !important;
-    background: var(--surface);
-}
-
-/* Sidebar */
-[data-testid="stSidebar"] {
-    border-right: 1px solid var(--border);
-    background: #FFFFFF;
-}
-
-[data-testid="stSidebar"] .block-container {
-    padding-top: 1.5rem;
-}
-
-[data-testid="stSidebar"] hr {
-    border-color: var(--border);
-}
-
-/* Dividers */
-hr {
-    border-color: var(--border);
-}
-
-/* Footer */
-.app-footer {
-    margin-top: 2rem;
-    padding: 1.4rem 0 0.45rem;
-    border-top: 1px solid var(--border);
-    color: var(--text-muted);
-    text-align: center;
-    font-size: 0.83rem;
-}
-
-.tech-badge {
-    display: inline-block;
-    padding: 0.25rem 0.55rem;
-    margin: 0.18rem;
-    border: 1px solid var(--border);
-    border-radius: 999px;
-    background: #FFFFFF;
-    color: var(--text-muted);
-    font-size: 0.76rem;
-}
-
-footer {
-    visibility: hidden;
-}
-
-/* Responsive */
-@media (max-width: 700px) {
-    [data-testid="stChatMessage"]:has(
-        [data-testid="stChatMessageAvatarUser"]
-    ),
-    [data-testid="stChatMessage"]:has(
-        [data-testid="stChatMessageAvatarAssistant"]
-    ) {
-        margin-left: 0;
-        margin-right: 0;
-    }
-}
 </style>
 """,
     unsafe_allow_html=True,
@@ -397,19 +418,26 @@ show_sidebar()
 # Hero section
 # -------------------------------------------------
 
-with st.container(border=True):
-    st.caption("AI-POWERED MEETING INTELLIGENCE")
+st.markdown(
+    """
+<div class="hero-section">
 
-    st.title("📝 AI Meeting Assistant")
+<div class="hero-badge">
+🚀 AI Powered Meeting Intelligence
+</div>
 
-    st.markdown(
-        """
-Turn documents, audio recordings, browser recordings, and meeting videos
-into structured insights. Generate professional notes, identify action
-items, ask contextual follow-up questions, and export the results.
-"""
-    )
+<div class="hero-title">
+AI Meeting Assistant
+</div>
 
+<div class="hero-description">
+Transform documents, audio recordings, browser recordings, and meeting videos into professional meeting notes, analytics, follow-up emails and contextual AI conversations.
+</div>
+
+</div>
+""",
+    unsafe_allow_html=True,
+)
 
 # -------------------------------------------------
 # Meeting source
@@ -521,17 +549,17 @@ with guide_tab:
 # Footer
 # -------------------------------------------------
 
-st.markdown(
-    """
-<div class="app-footer">
-    <div>Powered by</div>
-    <div>
-        <span class="tech-badge">Streamlit</span>
-        <span class="tech-badge">Groq</span>
-        <span class="tech-badge">Whisper</span>
-        <span class="tech-badge">Python</span>
-    </div>
-</div>
-""",
-    unsafe_allow_html=True,
-)
+st.divider()
+
+footer_col1, footer_col2 = st.columns([1, 8])
+
+with footer_col1:
+    st.image(
+        "assets/icon.png",
+        width=40,
+    )
+
+with footer_col2:
+    st.caption(
+        "AI Meeting Assistant • Powered by Streamlit • Groq • Whisper"
+    )

@@ -1,5 +1,9 @@
 import streamlit as st
 
+st.sidebar.image(
+    "assets/logo.png",
+    use_container_width=True,
+)
 
 def show_sidebar():
     with st.sidebar:
@@ -8,9 +12,12 @@ def show_sidebar():
         # Header
         # ----------------------------------------
 
-        st.markdown("## 🤖 AI Meeting Assistant")
-
-        st.caption("AI-Powered Meeting Intelligence")
+        st.sidebar.markdown(
+    """
+### AI Meeting Assistant
+AI-powered meeting intelligence workspace.
+"""
+)
 
         st.divider()
 
