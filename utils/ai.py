@@ -24,11 +24,120 @@ client = OpenAI(
 MODEL_NAME = "llama-3.3-70b-versatile"
 
 
-def generate_notes(transcript: str) -> str:
-    """Generate detailed, structured meeting notes."""
+def generate_notes(
+    transcript: str,
+    meeting_type: str = "General Meeting",
+) -> str:
+    """Generate notes tailored to the selected meeting type."""
 
     if not transcript.strip():
         raise ValueError("Transcript cannot be empty.")
+
+    meeting_templates = {
+        "General Meeting": """
+Use these sections:
+
+# Executive Summary
+# Participants
+# Key Discussion Points
+# Decisions Made
+# Action Items
+# Deadlines and Dates
+# Risks and Blockers
+# Next Steps
+# Open Questions
+""",
+        "Stand-up Meeting": """
+Use these sections:
+
+# Stand-up Summary
+# Participants
+# Completed Work
+# Work in Progress
+# Today's Plans
+# Blockers
+# Action Items
+# Follow-up Items
+""",
+        "Client Meeting": """
+Use these sections:
+
+# Client Meeting Summary
+# Participants
+# Client Requirements
+# Key Discussion Points
+# Client Concerns
+# Decisions and Agreements
+# Deliverables
+# Action Items
+# Deadlines
+# Follow-up Plan
+""",
+        "Interview": """
+Use these sections:
+
+# Interview Summary
+# Participants
+# Candidate Background
+# Skills and Experience
+# Strengths
+# Concerns or Gaps
+# Questions Discussed
+# Candidate Responses
+# Follow-up Actions
+
+Do not make a hiring decision unless the transcript explicitly contains one.
+""",
+        "Brainstorming": """
+Use these sections:
+
+# Brainstorming Summary
+# Participants
+# Problem or Goal
+# Ideas Suggested
+# Promising Ideas
+# Concerns and Constraints
+# Ideas Selected for Further Review
+# Action Items
+# Open Questions
+# Next Brainstorming Steps
+""",
+        "Sprint Planning": """
+Use these sections:
+
+# Sprint Planning Summary
+# Participants
+# Sprint Goal
+# Stories or Tasks Discussed
+# Priorities
+# Estimates Mentioned
+# Assignments
+# Dependencies
+# Risks and Blockers
+# Sprint Commitments
+# Next Steps
+""",
+        "Sales Call": """
+Use these sections:
+
+# Sales Call Summary
+# Participants
+# Prospect Needs
+# Pain Points
+# Product or Service Discussed
+# Objections
+# Buying Signals
+# Pricing or Commercial Discussion
+# Commitments
+# Follow-up Actions
+# Next Steps
+""",
+    }
+
+    selected_template = meeting_templates.get(
+        meeting_type,
+        meeting_templates["General Meeting"],
+    )
 
     response = client.chat.completions.create(
         model=MODEL_NAME,
@@ -37,61 +146,35 @@ def generate_notes(transcript: str) -> str:
                 "role": "system",
                 "content": (
                     "You are a professional meeting analyst. "
-                    "Create accurate, concise, and actionable meeting notes. "
-                    "Use only information present in the transcript. "
-                    "Never invent names, dates, deadlines, decisions, or tasks."
+                    "Create accurate, concise and actionable notes. "
+                    "Use only information supported by the transcript. "
+                    "Do not invent participants, facts, decisions, "
+                    "deadlines, tasks or recommendations."
                 ),
             },
             {
                 "role": "user",
                 "content": f"""
-Analyze the following meeting transcript and create professional notes in Markdown.
+Create professional notes for a {meeting_type}.
 
-Use exactly these sections:
+{selected_template}
 
-# Executive Summary
-Write a short overview of the meeting in 3 to 5 sentences.
+Formatting rules:
 
-# Participants
-List each participant mentioned in the transcript.
-Write "Not identified" if no names are available.
-
-# Key Discussion Points
-Summarize the main topics discussed as bullet points.
-
-# Decisions Made
-List confirmed decisions.
-Write "No confirmed decisions found" if none are present.
-
-# Action Items
-Create a Markdown table with these columns:
+- Use Markdown.
+- Keep the notes concise and easy to scan.
+- Use bullet points where appropriate.
+- For action items, create this Markdown table:
 
 | Owner | Task | Deadline | Status |
 |---|---|---|---|
 
-Use "Not specified" when the owner, deadline, or status is missing.
-
-# Deadlines and Dates
-List every deadline, review date, release date, or scheduled event mentioned.
-
-# Risks and Blockers
-List problems, risks, dependencies, or blockers discussed.
-Write "No risks or blockers identified" if none are present.
-
-# Next Steps
-List the immediate next steps in chronological order when possible.
-
-# Open Questions
-List unresolved questions or issues.
-Write "No open questions identified" if none are present.
-
-Important rules:
-- Do not add facts that are not in the transcript.
-- Preserve names and dates exactly as stated.
-- Merge duplicate discussion points.
-- Keep the notes concise and professional.
+- Use "Not specified" when an owner, deadline or status is missing.
 - Clearly distinguish confirmed decisions from suggestions.
-- Do not treat every statement as an action item.
+- Do not treat general discussion as an action item.
+- Merge duplicate points.
+- Preserve names and dates exactly as stated.
+- When a section has no information, state that clearly.
 
 Meeting transcript:
 
