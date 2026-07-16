@@ -551,15 +551,32 @@ with guide_tab:
 
 st.divider()
 
-footer_col1, footer_col2 = st.columns([1, 8])
+st.markdown(
+    """
+<div class="app-footer">
 
-with footer_col1:
-    st.image(
-        "assets/icon.png",
-        width=40,
-    )
+<p style="margin:0;
+font-size:15px;
+font-weight:600;
+color:#6B7280;">
 
-with footer_col2:
-    st.caption(
-        "AI Meeting Assistant • Powered by Streamlit • Groq • Whisper"
-    )
+🚀 Built with
+<b>Streamlit</b> •
+<b>Groq</b> •
+<b>Whisper</b> •
+<b>Python</b>
+
+</p>
+
+<p style="margin-top:6px;
+font-size:13px;
+color:#9CA3AF;">
+
+AI Meeting Assistant © 2026
+
+</p>
+
+</div>
+""",
+    unsafe_allow_html=True,
+)
